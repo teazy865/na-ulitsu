@@ -1,0 +1,14 @@
+name: iOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Need Swift project
+        run: |
+          echo "::error::В репо только HTML. Для ipa нужны NaUlitsu/*.swift и project.yml"
+          exit 1
