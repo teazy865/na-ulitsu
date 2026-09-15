@@ -9,7 +9,6 @@
 <style>
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#07080c;color:#f3f5fa;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}
 body{padding:calc(env(safe-area-inset-top)+10px) 0 calc(78px + env(safe-area-inset-bottom));background:radial-gradient(900px 420px at 50% -8%,#1a2233 0%,#07080c 58%)}
-.pad{padding:0 20px}
 .top{text-align:center;font-weight:700;font-size:17px}
 .status{width:max-content;margin:10px auto 0;background:#161922;border-radius:999px;padding:5px 10px;font-size:12px;color:#c9cddd}
 .hero{text-align:center;margin-top:10px}
@@ -26,7 +25,7 @@ body{padding:calc(env(safe-area-inset-top)+10px) 0 calc(78px + env(safe-area-ins
 .hour{min-width:62px;background:#14161d;border-radius:18px;padding:10px 8px;text-align:center;flex:0 0 auto}
 .hour.on{background:linear-gradient(180deg,#4aa2ff,#2f7bff)}
 .hour .d{font-weight:700}.hour .t{color:#8b90a0;font-size:11px;margin-top:4px}.hour.on .t{color:#eef5ff}
-.days{padding:0 10vw}
+.days{padding:0 6.5vw}
 .day{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:54px}
 .day .wd{justify-self:start;color:#9aa1b4;font-weight:600;font-size:15px}
 .day .mid{justify-self:center;display:flex;align-items:center;gap:8px}
@@ -103,7 +102,7 @@ function openDay(i){
 function render(j){
   const c=j.current,hours=parseHours(j,12);
   document.getElementById("place").textContent="📍 "+state.name;
-  document.getElementById("today-body").innerHTML=`<div class="status">Макет v10 · без API</div><div class="hero"><div class="icon-big">${WMO.symbol(c.weather_code)}</div><div class="deg">${Math.round(c.temperature_2m)}°</div><div class="cond">${WMO.short(c.weather_code)}</div><div class="feel">ощущается ${Math.round(c.apparent_temperature)}°</div></div><div class="stats"><div><b>${Math.round(c.wind_speed_10m)} км/ч</b><label>Ветер</label></div><div><b>${c.relative_humidity_2m}%</b><label>Влажность</label></div><div><b>${hours[0]?hours[0].prob:72}%</b><label>Дождь</label></div></div><div class="row-title">Сегодня <small>почасовка</small></div><div class="hours">${hours.map((h,i)=>`<div class="hour ${i===0?"on":""}"><div class="d">${Math.round(h.temp)}°</div><div>${WMO.symbol(h.code)}</div><div class="t">${String(h.t.getHours()).padStart(2,"0")}:00</div></div>`).join("")}</div><div class="row-title">10 дней</div><div class="days">${daysHtml(j)}</div>`;
+  document.getElementById("today-body").innerHTML=`<div class="status">Макет v11 · без API</div><div class="hero"><div class="icon-big">${WMO.symbol(c.weather_code)}</div><div class="deg">${Math.round(c.temperature_2m)}°</div><div class="cond">${WMO.short(c.weather_code)}</div><div class="feel">ощущается ${Math.round(c.apparent_temperature)}°</div></div><div class="stats"><div><b>${Math.round(c.wind_speed_10m)} км/ч</b><label>Ветер</label></div><div><b>${c.relative_humidity_2m}%</b><label>Влажность</label></div><div><b>${hours[0]?hours[0].prob:72}%</b><label>Дождь</label></div></div><div class="row-title">Сегодня <small>почасовка</small></div><div class="hours">${hours.map((h,i)=>`<div class="hour ${i===0?"on":""}"><div class="d">${Math.round(h.temp)}°</div><div>${WMO.symbol(h.code)}</div><div class="t">${String(h.t.getHours()).padStart(2,"0")}:00</div></div>`).join("")}</div><div class="row-title">10 дней</div><div class="days">${daysHtml(j)}</div>`;
   document.querySelectorAll(".day").forEach(el=>el.onclick=()=>openDay(+el.dataset.i));
 }
 const views={today:"view-today",day:"view-day",places:"view-places"};
