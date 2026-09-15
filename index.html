@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#121a28" />
+  <title>На улицу</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <style>
+    :root {
+      --bg1: #1e3a5f;
+      --bg2: #0e1520;
+      --card: rgba(255,255,255,.08);
+      --line: rgba(255,255,255,.12);
+      --text: #f4f7fb;
+      --muted: rgba(244,247,251,.62);
+      --accent: #f2c75c;
+      --good: #73d99e;
+      --warn: #f5a35a;
+      --bad: #ef6b6b;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #0e1520; color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; }
+    body {
+      background: linear-gradient(180deg, var(--bg1), var(--bg2) 55%);
+      padding: calc(env(safe-area-inset-top) + 12px) 18px calc(72px + env(safe-area-inset-bottom));
+    }
+    h1 { font-size: 15px; font-weight: 600; margin: 0; color: var(--muted); }
+    .place { font-size: 20px; font-weight: 650; margin: 2px 0 0; }
+    .hero { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 18px; }
+    .temp { font-size: 92px; font-weight: 300; letter-spacing: -4px; line-height: .9; }
+    .feel { color: var(--muted); font-size: 16px; margin-top: 8px; }
+    .icon-big { font-size: 52px; filter: saturate(1.1); }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 16px; margin-top: 12px; }
+    .advice { display: flex; gap: 12px; align-items: flex-start; }
+    .advice + .advice { margin-top: 10px; }
+    .dot { width: 34px; text-align: center; font-size: 22px; }
+    .title { font-weight: 650; }
+    .detail { color: var(--muted); font-size: 14px; margin-top: 3px; }
+    .hours { display: flex; gap: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+    .hour { min-width: 48px; text-align: center; }
+    .hour .t { color: var(--muted); font-size: 12px; }
+    .hour .d { font-weight: 650; margin-top: 6px; }
+    .hour .p { color: var(--muted); font-size: 11px; margin-top: 4px; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .m label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+    .days { display: flex; flex-direction: column; gap: 8px; }
+    .day { display: flex; align-items: center; gap: 10px; }
+    .day .name { flex: 1; }
+    .day .sub { color: var(--muted); font-size: 12px; }
+    .search { width: 100%; border: 0; border-radius: 14px; padding: 12px 14px; background: rgba(255,255,255,.1); color: #fff; font-size: 16px; }
+    .search::placeholder { color: rgba(255,255,255,.45); }
+    .hit { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .hit small { color: var(--muted); }
+    .tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 6px; padding: 8px 18px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(14,21,32,.88); backdrop-filter: blur(16px); }
+    .tabs button { flex: 1; background: transparent; border: 0; color: var(--muted); padding: 10px; font-size: 13px; font-weight: 600; }
+    .tabs button.on { color: var(--accent); }
+    .err, .load { text-align: center; margin-top: 48px; color: var(--muted); }
+    button.link { background: var(--accent); color: #1a1406; border: 0; border-radius: 12px; padding: 10px 16px; font-weight: 700; }
+    .tone-good { color: var(--good); } .tone-warn { color: var(--warn); } .tone-bad { color: var(--bad); } .tone-neutral { color: var(--accent); }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="view-today">
+    <h1>На улицу</h1>
+    <div class="place" id="place">Определяю место…</div>
+    <div id="today-body" class="load">Загружаю прогноз</div>
+  </div>
+  <div id="view-days" class="hidden">
+    <h1>Прогноз</h1>
+    <div class="place">10 дней</div>
+    <div id="days-body" class="card days"></div>
+  </div>
+  <div id="view-places" class="hidden">
+    <h1>Места</h1>
+    <div class="place">Город или геолокация</div>
+    <div class="card">
+      <input class="search" id="q" placeholder="Найти город" />
+      <button class="link" style="margin-top:12px;width:100%" id="geo">Моё местоположение</button>
+      <div id="hits"></div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="on" data-tab="today">Сейчас</button>
+    <button data-tab="days">10 дней</button>
+    <button data-tab="places">Места</button>
+  </nav>
+<script>
+const WMO = {
+  symbol(c, day=true) {
+    if (c === 0) return day ? "☀️" : "🌙";
+    if (c <= 2) return "⛅";
+    if (c === 3) return "☁️";
+    if (c === 45 || c === 48) return "🌫️";
+    if (c >= 51 && c <= 57) return "🌦️";
+    if (c >= 61 && c <= 67) return "🌧️";
+    if (c >= 71 && c <= 77) return "🌨️";
+    if (c >= 80 && c <= 82) return "🌧️";
+    if (c >= 85) return c >= 95 ? "⛈️" : "🌨️";
+    return "☁️";
+  },
+  phrase(c) {
+    const m = {0:"Ясно",1:"Почти ясно",2:"Переменная облачность",3:"Пасмурно",45:"Туман",48:"Туман",
+      51:"Морось",53:"Морось",61:"Небольшой дождь",63:"Дождь",65:"Сильный дождь",
+      71:"Небольшой снег",73:"Снег",75:"Сильный снег",80:"Ливень",81:"Ливень",95:"Гроза"};
+    return m[c] || "Смешанная погода";
+  }
+};
+
+function advice(cur, hours) {
+  const soon = hours.slice(0, 6);
+  const rainSoon = soon.some(h => h.prob >= 45 || h.precip >= 0.2);
+  const heavy = soon.some(h => h.prob >= 70 || h.precip >= 1);
+  const snow = [71,73,75,77,85,86].includes(cur.code) || soon.some(h => [71,73,75,77,85,86].includes(h.code));
+  const windy = cur.wind >= 35 || soon.some(h => h.wind >= 40);
+  const items = [];
+  if (heavy) items.push({t:"Зонт обязателен", d:"В ближайшие часы серьёзные осадки.", s:"☔", tone:"bad"});
+  else if (rainSoon) items.push({t:"Возьмите зонт", d:"Дождь вероятнее, чем кажется по небу.", s:"🌂", tone:"warn"});
+  else if (cur.code <= 1 && !rainSoon) items.push({t:"Можно без зонта", d:"Осадки в ближайшие часы не ждут.", s:"✅", tone:"good"});
+  if (snow || cur.temp <= 0) items.push({t:"Гололёд возможен", d:"Осторожнее на выходе и за рулём.", s:"❄️", tone:"warn"});
+  if (cur.app >= 26) items.push({t:"Жара", d:"Вода, кепка, лучше тень в полдень.", s:"🥵", tone:"warn"});
+  else if (cur.app <= 0) items.push({t:"Оденьтесь теплее", d:`Ощущается ${Math.round(cur.app)}° — холоднее воздуха.`, s:"🧣", tone:"warn"});
+  if (windy) items.push({t:"Сильный ветер", d:"Капюшон и ветровка пригодятся.", s:"💨", tone:"warn"});
+  if (!items.length) items.push({t:WMO.phrase(cur.code), d:"Обычный день, без сюрпризов.", s:WMO.symbol(cur.code, cur.isDay), tone:"neutral"});
+  return items.slice(0,3);
+}
+
+let state = { lat: 55.75, lon: 37.62, name: "Москва", bundle: null };
+
+async function load(lat, lon, name) {
+  state.lat = lat; state.lon = lon; state.name = name;
+  document.getElementById("place").textContent = name;
+  document.getElementById("today-body").innerHTML = `<div class="load">Обновляю…</div>`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=10`;
+  try {
+    const j = await (await fetch(url)).json();
+    render(j);
+  } catch (e) {
+    document.getElementById("today-body").innerHTML = `<div class="err">Нет сети. <br><br><button class="link" onclick="load(state.lat,state.lon,state.name)">Повторить</button></div>`;
+  }
+}
+
+function render(j) {
+  const c = {
+    temp: j.current.temperature_2m,
+    app: j.current.apparent_temperature,
+    code: j.current.weather_code,
+    wind: j.current.wind_speed_10m,
+    hum: j.current.relative_humidity_2m,
+    precip: j.current.precipitation,
+    isDay: j.current.is_day === 1
+  };
+  const now = Date.now();
+  const hours = [];
+  for (let i = 0; i < j.hourly.time.length; i++) {
+    const t = new Date(j.hourly.time[i]);
+    if (t.getTime() < now - 3600000) continue;
+    hours.push({
+      t, temp: j.hourly.temperature_2m[i],
+      prob: j.hourly.precipitation_probability[i],
+      precip: j.hourly.precipitation[i],
+      code: j.hourly.weather_code[i],
+      wind: j.hourly.wind_speed_10m[i]
+    });
+    if (hours.length >= 24) break;
+  }
+  const adv = advice(c, hours);
+  document.getElementById("place").textContent = state.name;
+  document.getElementById("today-body").innerHTML = `
+    <div class="hero">
+      <div>
+        <div class="temp">${Math.round(c.temp)}°</div>
+        <div class="feel">${WMO.phrase(c.code)} · ощущается ${Math.round(c.app)}°</div>
+      </div>
+      <div class="icon-big">${WMO.symbol(c.code, c.isDay)}</div>
+    </div>
+    ${adv.map(a => `<div class="card advice"><div class="dot tone-${a.tone}">${a.s}</div><div><div class="title">${a.t}</div><div class="detail">${a.d}</div></div></div>`).join("")}
+    <div class="card"><div class="title" style="margin-bottom:12px">Ближайшие часы</div>
+      <div class="hours">${hours.map(h => `<div class="hour"><div class="t">${String(h.t.getHours()).padStart(2,"0")}</div><div>${WMO.symbol(h.code)}</div><div class="d">${Math.round(h.temp)}°</div><div class="p">${h.prob}%</div></div>`).join("")}</div>
+    </div>
+    <div class="metrics">
+      <div class="card"><label>Ветер</label><b>${Math.round(c.wind)} км/ч</b></div>
+      <div class="card"><label>Влажность</label><b>${c.hum}%</b></div>
+      <div class="card"><label>Осадки</label><b>${c.precip.toFixed(1)} мм</b></div>
+    </div>`;
+  const daysEl = document.getElementById("days-body");
+  const df = new Intl.DateTimeFormat("ru-RU", { weekday: "short", day: "numeric", month: "short" });
+  daysEl.innerHTML = j.daily.time.map((d,i) => `
+    <div class="day">
+      <div>${WMO.symbol(j.daily.weather_code[i])}</div>
+      <div class="name">${df.format(new Date(d))}<div class="sub">${WMO.phrase(j.daily.weather_code[i])}</div></div>
+      <div class="sub">${j.daily.precipitation_probability_max[i]}%</div>
+      <b>${Math.round(j.daily.temperature_2m_min[i])}° / ${Math.round(j.daily.temperature_2m_max[i])}°</b>
+    </div>`).join("");
+}
+
+function useGeo() {
+  if (!navigator.geolocation) return load(55.75,37.62,"Москва");
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const { latitude: lat, longitude: lon } = pos.coords;
+    let name = "Здесь";
+    try {
+      const g = await (await fetch(`https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=ru`)).json();
+      name = g?.name || g?.city || name;
+    } catch {}
+    load(lat, lon, name);
+  }, () => load(55.75,37.62,"Москва"), { enableHighAccuracy: false, timeout: 8000 });
+}
+
+document.getElementById("geo").onclick = useGeo;
+let timer;
+document.getElementById("q").addEventListener("input", e => {
+  clearTimeout(timer);
+  const v = e.target.value.trim();
+  timer = setTimeout(async () => {
+    const box = document.getElementById("hits");
+    if (v.length < 2) { box.innerHTML = ""; return; }
+    const j = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(v)}&count=8&language=ru`)).json();
+    box.innerHTML = (j.results || []).map(r => `<div class="hit" data-lat="${r.latitude}" data-lon="${r.longitude}" data-name="${r.name}"><b>${r.name}</b><br><small>${[r.admin1,r.country].filter(Boolean).join(", ")}</small></div>`).join("");
+    box.querySelectorAll(".hit").forEach(el => el.onclick = () => {
+      load(+el.dataset.lat, +el.dataset.lon, el.dataset.name);
+      show("today");
+    });
+  }, 280);
+});
+
+const views = { today: "view-today", days: "view-days", places: "view-places" };
+function show(tab) {
+  Object.entries(views).forEach(([k,id]) => document.getElementById(id).classList.toggle("hidden", k !== tab));
+  document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
+}
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => show(b.dataset.tab));
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
+useGeo();
+</script>
+</body>
+</html>
