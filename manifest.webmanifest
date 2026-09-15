@@ -3,8 +3,8 @@
   "short_name": "На улицу",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#121a28",
-  "theme_color": "#121a28",
+  "background_color": "#07080c",
+  "theme_color": "#07080c",
   "lang": "ru",
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
