@@ -16,17 +16,18 @@ body{padding:calc(env(safe-area-inset-top)+8px) 0 calc(78px + env(safe-area-inse
 .deg{font-size:108px;font-weight:620;letter-spacing:-5px;line-height:.88;color:#fff;margin-top:2px}
 .cond{color:#c5c9d6;font-size:24px;margin-top:6px}
 .feel{color:#8b90a0;font-size:15px;margin-top:6px}
-.stats{display:grid;grid-template-columns:1fr 1fr 1fr;background:#14161d;border-radius:26px;margin:22px 18px 0;padding:18px 6px;text-align:center}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;background:#14161d;border-radius:26px;margin:22px 10vw 0;padding:16px 4px 14px;text-align:center}
 .stats div+div{border-left:1px solid rgba(255,255,255,.08)}
-.stats b{display:block;font-size:17px}.stats label{color:#8b90a0;font-size:12px;margin-top:4px;display:block}
-.row-title{display:flex;justify-content:space-between;align-items:center;margin:22px 18px 12px;font-weight:650;font-size:18px;color:#d8dbe6}
+.stats .si{display:block;font-size:20px;margin-bottom:4px;line-height:1}
+.stats b{display:block;font-size:16px}.stats label{color:#8b90a0;font-size:12px;margin-top:3px;display:block}
+.row-title{display:flex;justify-content:space-between;align-items:center;margin:22px 10vw 12px;font-weight:650;font-size:18px;color:#d8dbe6}
 .row-title .go{color:#8b90a0;font-weight:600;font-size:16px;background:0;border:0;padding:0}
-.hours{display:flex;gap:12px;overflow-x:auto;padding:0 18px 10px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.hours{display:flex;gap:12px;overflow-x:auto;padding:0 10vw 10px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
 .hours::-webkit-scrollbar{display:none}
-.hour{flex:0 0 calc((100vw - 36px - 36px)/4);min-width:72px;background:#14161d;border-radius:22px;padding:14px 8px 12px;text-align:center;scroll-snap-align:start}
+.hour{flex:0 0 calc((80vw - 36px) / 4);background:#14161d;border-radius:22px;padding:14px 6px 12px;text-align:center;scroll-snap-align:start}
 .hour.on{background:linear-gradient(180deg,#4aa2ff,#2f7bff);box-shadow:0 10px 24px rgba(47,123,255,.35)}
-.hour .d{font-weight:700;font-size:20px}.hour .ico{font-size:28px;margin:8px 0 6px;display:block}
-.hour .t{color:#8b90a0;font-size:13px}.hour.on .t{color:#eef5ff}
+.hour .d{font-weight:700;font-size:20px}.hour .ico{font-size:26px;margin:8px 0 6px;display:block}
+.hour .t{color:#8b90a0;font-size:12px}.hour.on .t{color:#eef5ff}
 .days{padding:0 6.5vw}
 .day{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:54px}
 .day .wd{justify-self:start;color:#9aa1b4;font-weight:600;font-size:15px}
@@ -70,6 +71,17 @@ button.back{background:0;border:0;color:#fff;font-size:15px;font-weight:650;padd
 <script>
 const WMO={symbol(c){if(c===0)return"☀️";if(c<=2)return"⛅";if(c===3)return"☁️";if(c>=95)return"⛈️";if(c>=71)return"❄️";if(c>=61)return"🌧️";return"☁️"},
 short(c){if(c<=1)return"Ясно";if(c===2)return"Облачно";if(c===3)return"Пасмурно";if(c>=95)return"Гроза";if(c>=71)return"Снег";if(c>=61)return"Дождь";return"Облачно"}};
+function statIcons(wind,hum,rain,code){
+  const w=wind>=40?"💨":wind>=20?"🌬️":"💨";
+  const h=hum>=80?"💦":hum>=50?"💧":"🩸";
+  let r="☀️";
+  if(code>=95)r="⚡";
+  else if(code>=71)r="❄️";
+  else if(code>=61||rain>=45)r="🌧️";
+  else if(code>=3)r="☁️";
+  else if(code>=1)r="⛅";
+  return {w,h,r};
+}
 const WD=["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 function mock(){
   const now=new Date();now.setMinutes(0,0,0);
@@ -104,14 +116,16 @@ function openDay(i){
   const b={morn:[],day:[],eve:[],night:[]};
   hours.forEach(h=>{const hr=h.t.getHours();if(hr<6)b.night.push(h);else if(hr<12)b.morn.push(h);else if(hr<18)b.day.push(h);else b.eve.push(h)});
   const avg=a=>a.length?Math.round(a.reduce((s,h)=>s+h.temp,0)/a.length):"—";
+  const ic=statIcons(12,22,j.daily.precipitation_probability_max[i],j.daily.weather_code[i]);
   document.getElementById("day-h1").textContent=new Intl.DateTimeFormat("ru-RU",{weekday:"long",day:"numeric",month:"long"}).format(new Date(date));
-  document.getElementById("day-body").innerHTML=`<div class="hero"><div class="icon-big">${WMO.symbol(j.daily.weather_code[i])}</div><div class="deg" style="font-size:64px">${tmax}°<span style="font-size:30px;color:#8b90a0">/${tmin}°</span></div><div class="cond">${WMO.short(j.daily.weather_code[i])}</div></div><div class="stats"><div><b>12 км/ч</b><label>Ветер</label></div><div><b>22%</b><label>Влажность</label></div><div><b>${j.daily.precipitation_probability_max[i]}%</b><label>Дождь</label></div></div><div class="card"><div class="periods"><div class="period"><div class="l">Утро</div><div class="tt">${avg(b.morn)}°</div></div><div class="period"><div class="l">День</div><div class="tt">${avg(b.day)}°</div></div><div class="period"><div class="l">Вечер</div><div class="tt">${avg(b.eve)}°</div></div><div class="period"><div class="l">Ночь</div><div class="tt">${avg(b.night)}°</div></div></div></div>`;
+  document.getElementById("day-body").innerHTML=`<div class="hero"><div class="icon-big">${WMO.symbol(j.daily.weather_code[i])}</div><div class="deg" style="font-size:64px">${tmax}°<span style="font-size:30px;color:#8b90a0">/${tmin}°</span></div><div class="cond">${WMO.short(j.daily.weather_code[i])}</div></div><div class="stats"><div><span class="si">${ic.w}</span><b>12 км/ч</b><label>Ветер</label></div><div><span class="si">${ic.h}</span><b>22%</b><label>Влажность</label></div><div><span class="si">${ic.r}</span><b>${j.daily.precipitation_probability_max[i]}%</b><label>Дождь</label></div></div><div class="card"><div class="periods"><div class="period"><div class="l">Утро</div><div class="tt">${avg(b.morn)}°</div></div><div class="period"><div class="l">День</div><div class="tt">${avg(b.day)}°</div></div><div class="period"><div class="l">Вечер</div><div class="tt">${avg(b.eve)}°</div></div><div class="period"><div class="l">Ночь</div><div class="tt">${avg(b.night)}°</div></div></div></div>`;
   show("day");
 }
 function render(j){
-  const c=j.current,hours=parseHours(j,16);
+  const c=j.current,hours=parseHours(j,16),rain=hours[0]?hours[0].prob:72;
+  const ic=statIcons(c.wind_speed_10m,c.relative_humidity_2m,rain,c.weather_code);
   document.getElementById("place").textContent="📍 "+state.name;
-  document.getElementById("today-body").innerHTML=`<div class="status">Макет v13 · без API</div><div class="hero"><div class="icon-big">${WMO.symbol(c.weather_code)}</div><div class="deg">${Math.round(c.temperature_2m)}°</div><div class="cond">${WMO.short(c.weather_code)}</div><div class="feel">ощущается ${Math.round(c.apparent_temperature)}°</div></div><div class="stats"><div><b>${Math.round(c.wind_speed_10m)} км/ч</b><label>Ветер</label></div><div><b>${c.relative_humidity_2m}%</b><label>Влажность</label></div><div><b>${hours[0]?hours[0].prob:72}%</b><label>Дождь</label></div></div><div class="row-title">Сегодня <button class="go" id="open-days">10 дней ›</button></div><div class="hours">${hours.map((h,i)=>`<div class="hour ${i===0?"on":""}"><div class="d">${Math.round(h.temp)}°</div><span class="ico">${WMO.symbol(h.code)}</span><div class="t">${String(h.t.getHours()).padStart(2,"0")}:00</div></div>`).join("")}</div>`;
+  document.getElementById("today-body").innerHTML=`<div class="status">Макет v14 · без API</div><div class="hero"><div class="icon-big">${WMO.symbol(c.weather_code)}</div><div class="deg">${Math.round(c.temperature_2m)}°</div><div class="cond">${WMO.short(c.weather_code)}</div><div class="feel">ощущается ${Math.round(c.apparent_temperature)}°</div></div><div class="stats"><div><span class="si">${ic.w}</span><b>${Math.round(c.wind_speed_10m)} км/ч</b><label>Ветер</label></div><div><span class="si">${ic.h}</span><b>${c.relative_humidity_2m}%</b><label>Влажность</label></div><div><span class="si">${ic.r}</span><b>${rain}%</b><label>Дождь</label></div></div><div class="row-title">Сегодня <button class="go" id="open-days">10 дней ›</button></div><div class="hours">${hours.map((h,i)=>`<div class="hour ${i===0?"on":""}"><div class="d">${Math.round(h.temp)}°</div><span class="ico">${WMO.symbol(h.code)}</span><div class="t">${String(h.t.getHours()).padStart(2,"0")}:00</div></div>`).join("")}</div>`;
   document.getElementById("open-days").onclick=openDays;
 }
 const views={today:"view-today",days:"view-days",day:"view-day",places:"view-places"};
