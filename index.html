@@ -4,23 +4,23 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="theme-color" content="#2a3140"/>
+<meta name="theme-color" content="#222834"/>
 <title>На улицу</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#2a3140;--bg2:#3a4254;--card:#3d4558;--text:#f4f6fb;--muted:#b3b8c7}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Geist,-apple-system,BlinkMacSystemFont,sans-serif}
-body{padding:calc(env(safe-area-inset-top)+8px) 0 calc(78px + env(safe-area-inset-bottom));background:radial-gradient(900px 460px at 50% -8%,#4a5368 0%,#2a3140 58%)}
+:root{--bg:#222834;--glow:#3a4254;--card:#353c4e;--text:#f4f6fb;--muted:#b3b8c7;--glass:rgba(28,32,42,.72);--pill:rgba(8,10,14,.88);--bar:rgba(36,40,52,.55)}
+html[data-theme="light"]{--bg:#dfe3ea;--glow:#f4f6fa;--card:#fff;--text:#1c1f28;--muted:#6b7284;--glass:rgba(255,255,255,.62);--pill:rgba(255,255,255,.92);--bar:rgba(230,234,240,.55)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Geist,-apple-system,sans-serif}
+body{padding:calc(env(safe-area-inset-top)+8px) 0 calc(96px + env(safe-area-inset-bottom));background:radial-gradient(900px 460px at 50% -8%,var(--glow) 0%,var(--bg) 58%);transition:background .35s ease,color .35s ease}
 .top{text-align:center;font-weight:700;font-size:18px}
-.status{width:max-content;margin:12px auto 0;background:rgba(0,0,0,.22);border-radius:999px;padding:6px 12px;font-size:13px;color:#d5d9e4}
+.status{width:max-content;margin:12px auto 0;background:var(--bar);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--muted)}
 .hero{text-align:center;margin-top:8px}
 .icon-big{display:flex;justify-content:center;margin:4px 0 2px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.28))}
-.deg{font-size:108px;font-weight:600;letter-spacing:-5px;line-height:.88;color:#fff;margin-top:2px}
-.cond{color:#d7dbe6;font-size:24px;margin-top:6px;font-weight:500}
-.feel{color:var(--muted);font-size:15px;margin-top:6px}
+.deg{font-size:108px;font-weight:600;letter-spacing:-5px;line-height:.88;margin-top:2px}
+.cond{font-size:24px;margin-top:6px;font-weight:500}.feel{color:var(--muted);font-size:15px;margin-top:6px}
 .stats{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--card);border-radius:26px;margin:22px 10vw 0;padding:16px 4px 14px;text-align:center}
-.stats div+div{border-left:1px solid rgba(255,255,255,.1)}
+.stats div+div{border-left:1px solid rgba(128,128,128,.2)}
 .stats .si{display:flex;justify-content:center;margin-bottom:4px;height:26px}
 .stats b{display:block;font-size:16px;font-weight:600}.stats label{color:var(--muted);font-size:12px;margin-top:3px;display:block}
 .row-title{display:flex;justify-content:space-between;align-items:center;margin:22px 10vw 12px;font-weight:650;font-size:18px}
@@ -29,55 +29,68 @@ body{padding:calc(env(safe-area-inset-top)+8px) 0 calc(78px + env(safe-area-inse
 .hours-clip::-webkit-scrollbar{display:none}
 .hours{display:flex;gap:10px;width:max-content}
 .hour{width:calc((80vw - 30px) / 4);flex:none;background:var(--card);border-radius:22px;padding:14px 6px 12px;text-align:center}
-.hour.on{background:linear-gradient(180deg,#5aa8ff,#2f7bff)}
+.hour.on{background:linear-gradient(180deg,#5aa8ff,#2f7bff);color:#fff}
 .hour .d{font-weight:700;font-size:20px}.hour .ico{display:flex;justify-content:center;margin:8px 0 6px;height:32px}
 .hour .t{color:var(--muted);font-size:12px}.hour.on .t{color:#eef5ff}
 .days{padding:0 6.5vw}
 .day{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:54px}
-.day .wd{justify-self:start;color:#c2c7d4;font-weight:600;font-size:15px}
-.day .mid{justify-self:center;display:flex;align-items:center;gap:8px}
-.day .lab{font-weight:600;font-size:16px}
-.day .temps{justify-self:end;font-weight:700;font-size:15px;white-space:nowrap}
+.day .wd{justify-self:start;color:var(--muted);font-weight:600}.day .mid{justify-self:center;display:flex;align-items:center;gap:8px}
+.day .lab{font-weight:600;font-size:16px}.day .temps{justify-self:end;font-weight:700;white-space:nowrap}
 .day .temps .mn{color:var(--muted);margin-left:8px}
 .card{background:var(--card);border-radius:22px;padding:14px;margin:12px 20px 0}
 .detail{color:var(--muted);font-size:13px;margin-top:3px}
-.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;padding:8px 18px calc(10px + env(safe-area-inset-bottom));background:rgba(42,49,64,.94)}
-.tabs button{flex:1;background:0;border:0;color:var(--muted);padding:10px;font-weight:700;font-family:inherit}.tabs button.on{color:#fff}
-.search{width:100%;border:0;border-radius:16px;padding:12px 14px;background:#2f3646;color:#fff;font-size:16px;font-family:inherit}
-button.back{background:0;border:0;color:#fff;font-size:15px;font-weight:650;padding:0 0 8px 20px;font-family:inherit}
+.search{width:100%;border:0;border-radius:16px;padding:12px 14px;background:var(--bar);color:var(--text);font-size:16px;font-family:inherit}
+button.back{background:0;border:0;color:var(--text);font-size:15px;font-weight:650;padding:0 0 8px 20px;font-family:inherit}
 .hidden{display:none!important}
 .periods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
-.period{background:#2f3646;border-radius:16px;padding:12px 4px}
+.period{background:var(--bar);border-radius:16px;padding:12px 4px}
 .period .l{color:var(--muted);font-size:12px}.period .tt{font-size:20px;font-weight:700;margin-top:4px}
+.hit{padding:12px 0;border-bottom:1px solid rgba(128,128,128,.15)}
+.dock-wrap{position:fixed;left:0;right:0;bottom:0;padding:10px 28px calc(14px + env(safe-area-inset-bottom));pointer-events:none}
+.dock{pointer-events:auto;position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;height:58px;border-radius:999px;background:var(--bar);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 30px rgba(0,0,0,.28)}
+.dock button{position:relative;z-index:1;height:100%;background:0;border:0;color:var(--text);display:flex;align-items:center;justify-content:center}
+.dock svg{width:22px;height:22px}
+.glass{position:absolute;top:5px;bottom:5px;width:calc(33.333% - 8px);border-radius:999px;background:var(--pill);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 6px 16px rgba(0,0,0,.25);transition:left .38s cubic-bezier(.22,.9,.28,1)}
+.dock[data-on="places"] .glass{left:4px}
+.dock[data-on="today"] .glass{left:calc(33.333% + 4px)}
+.dock[data-on="settings"] .glass{left:calc(66.666% + 4px)}
+.seg{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;height:48px;border-radius:999px;background:var(--bar);backdrop-filter:blur(18px)}
+.seg button{z-index:1;background:0;border:0;color:var(--text);font:600 14px Geist,sans-serif}
+.seg .g{position:absolute;top:4px;bottom:4px;width:calc(33.333% - 8px);left:4px;border-radius:999px;background:var(--pill);transition:left .38s cubic-bezier(.22,.9,.28,1)}
+.seg[data-on="light"] .g{left:calc(33.333% + 4px)}
+.seg[data-on="dark"] .g{left:calc(66.666% + 4px)}
 </style>
 </head>
 <body>
 <div id="view-today"><div class="top" id="place">📍 Минск</div><div id="today-body"></div></div>
 <div id="view-days" class="hidden"><button class="back" id="back-days">‹ Назад</button><div class="top">10 дней</div><div id="days-body" class="days" style="margin-top:16px"></div></div>
 <div id="view-day" class="hidden"><button class="back" id="back-day">‹ К 10 дням</button><div class="top" id="day-h1"></div><div id="day-body"></div></div>
-<div id="view-places" class="hidden"><div class="top">Места</div><div class="card"><input class="search" disabled placeholder="Поиск отключён"/><div class="detail">Без API.</div></div></div>
-<nav class="tabs"><button class="on" data-tab="today">Сейчас</button><button data-tab="places">Места</button></nav>
+<div id="view-places" class="hidden"><div class="top">Поиск</div><div class="card"><input class="search" id="q" placeholder="Найти город"/><div id="hits" class="detail" style="margin-top:10px">В режиме макета: Минск, Москва, Астана</div></div></div>
+<div id="view-settings" class="hidden"><div class="top">Настройки</div><div class="card"><div style="font-weight:650;margin-bottom:12px">Тема</div><div class="seg" id="theme-seg" data-on="system"><div class="g"></div><button data-th="system">Системная</button><button data-th="light">Светлая</button><button data-th="dark">Тёмная</button></div><div class="detail" style="margin-top:12px">Системная следует теме iPhone.</div></div></div>
+<div class="dock-wrap"><div class="dock" id="dock" data-on="today"><div class="glass"></div>
+<button data-tab="places" aria-label="Поиск"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg></button>
+<button data-tab="today" aria-label="Главная"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11l8-7 8 7v8a2 2 0 01-2 2h-3v-6H9v6H6a2 2 0 01-2-2v-8z"/></svg></button>
+<button data-tab="settings" aria-label="Настройки"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9c.3.6.9 1 1.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
+</div></div>
 <script>
 function pic(kind,s=28){
   const n=kind+s;
-  const sun=`<circle cx="16" cy="16" r="8" fill="url(#s${n})"/>`;
   const defs=`<defs><linearGradient id="s${n}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFE27A"/><stop offset="1" stop-color="#F5B42A"/></linearGradient><linearGradient id="c${n}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#c9d2e0"/></linearGradient><linearGradient id="k${n}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#8b95a8"/><stop offset="1" stop-color="#5c6578"/></linearGradient><linearGradient id="z${n}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFE566"/><stop offset="1" stop-color="#F5A623"/></linearGradient></defs>`;
   const cloud=`<ellipse cx="20" cy="19" rx="8" ry="6" fill="url(#c${n})"/><ellipse cx="13" cy="20" rx="7" ry="5.4" fill="url(#c${n})"/><ellipse cx="16.5" cy="15" rx="6" ry="5" fill="url(#c${n})"/>`;
   const dark=`<ellipse cx="20" cy="19" rx="8" ry="6" fill="url(#k${n})"/><ellipse cx="13" cy="20" rx="7" ry="5.4" fill="url(#k${n})"/><ellipse cx="16.5" cy="15" rx="6" ry="5" fill="url(#k${n})"/>`;
   let inner=cloud;
   if(kind==="sun") inner=`<circle cx="16" cy="16" r="7.5" fill="url(#s${n})"/><g stroke="#F5B42A" stroke-width="2" stroke-linecap="round"><path d="M16 3v3M16 26v3M3 16h3M26 16h3M6.5 6.5l2 2M23.5 23.5l2 2M6.5 25.5l2-2M23.5 8.5l2-2"/></g>`;
-  if(kind==="part") inner=sun+cloud;
-  if(kind==="cloud") inner=cloud;
+  if(kind==="part") inner=`<circle cx="12" cy="13" r="7" fill="url(#s${n})"/>`+cloud;
   if(kind==="rain") inner=dark+`<g fill="#4DA3FF"><circle cx="12" cy="27" r="1.4"/><circle cx="17" cy="29" r="1.4"/><circle cx="22" cy="27" r="1.4"/></g>`;
   if(kind==="storm") inner=dark+`<path d="M17 14l-5 8h4l-2 7 8-10h-4z" fill="url(#z${n})"/>`;
-  if(kind==="snow") inner=cloud+`<g fill="#dfe7f5" font-size="7"><text x="11" y="29">*</text><text x="17" y="31">*</text><text x="22" y="29">*</text></g>`;
-  if(kind==="wind") inner=`<g fill="none" stroke="#c5d0e0" stroke-width="2" stroke-linecap="round"><path d="M6 14h16a3 3 0 100-6"/><path d="M6 18h18a3 3 0 110 6"/><path d="M6 22h10"/></g>`;
+  if(kind==="snow") inner=cloud+`<g fill="#dfe7f5" font-size="7"><text x="11" y="29">*</text><text x="17" y="31">*</text></g>`;
+  if(kind==="wind") inner=`<g fill="none" stroke="#c5d0e0" stroke-width="2" stroke-linecap="round"><path d="M6 14h16a3 3 0 100-6"/><path d="M6 18h18a3 3 0 110 6"/></g>`;
   if(kind==="drop") inner=`<path d="M16 4c6 8 10 12 10 17a10 10 0 11-20 0c0-5 4-9 10-17z" fill="#4DA3FF"/>`;
   return `<svg width="${s}" height="${s}" viewBox="0 0 32 32">${defs}${inner}</svg>`;
 }
 function kind(c){if(c===0)return"sun";if(c<=2)return"part";if(c===3)return"cloud";if(c>=95)return"storm";if(c>=71)return"snow";if(c>=61)return"rain";return"cloud"}
 const WMO={pic(c,s=28){return pic(kind(c),s)},short(c){if(c<=1)return"Ясно";if(c===2)return"Облачно";if(c===3)return"Пасмурно";if(c>=95)return"Гроза";if(c>=71)return"Снег";if(c>=61)return"Дождь";return"Облачно"}};
-function statIcons(wind,hum,rain,code){return{w:pic(wind>=35?"wind":"wind",22),h:pic("drop",22),r:WMO.pic(rain>=45&&code<61?61:code,22)}}
+function statIcons(wind,hum,rain,code){return{w:pic("wind",22),h:pic("drop",22),r:WMO.pic(rain>=45&&code<61?61:code,22)}}
 const WD=["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 function mock(){
   const now=new Date();now.setMinutes(0,0,0);
@@ -89,14 +102,7 @@ function mock(){
     daily.time.push(day.toISOString());daily.weather_code.push(codes[d]);
     daily.temperature_2m_max.push(20+(d%6));daily.temperature_2m_min.push(14+(d%5));
     daily.precipitation_probability_max.push([72,55,80,20,88,60,70,15,40,5][d]);
-    for(let h=0;h<24;h++){
-      const t=new Date(day);t.setHours(h);
-      hourly.time.push(t.toISOString());
-      hourly.temperature_2m.push(16+Math.round(6*Math.sin((h-8)/4)));
-      hourly.apparent_temperature.push(15+Math.round(6*Math.sin((h-8)/4)));
-      hourly.precipitation_probability.push(h>=10&&h<=18?70:20);
-      hourly.weather_code.push(codes[d]);
-    }
+    for(let h=0;h<24;h++){const t=new Date(day);t.setHours(h);hourly.time.push(t.toISOString());hourly.temperature_2m.push(16+Math.round(6*Math.sin((h-8)/4)));hourly.apparent_temperature.push(15+Math.round(6*Math.sin((h-8)/4)));hourly.precipitation_probability.push(h>=10&&h<=18?70:20);hourly.weather_code.push(codes[d]);}
   }
   return {current:{temperature_2m:23,apparent_temperature:21,weather_code:95,relative_humidity_2m:24,wind_speed_10m:13},hourly,daily};
 }
@@ -114,21 +120,36 @@ function openDay(i){
   const avg=a=>a.length?Math.round(a.reduce((s,h)=>s+h.temp,0)/a.length):"—";
   const ic=statIcons(12,22,j.daily.precipitation_probability_max[i],j.daily.weather_code[i]);
   document.getElementById("day-h1").textContent=new Intl.DateTimeFormat("ru-RU",{weekday:"long",day:"numeric",month:"long"}).format(new Date(date));
-  document.getElementById("day-body").innerHTML=`<div class="hero"><div class="icon-big">${WMO.pic(j.daily.weather_code[i],120)}</div><div class="deg" style="font-size:64px">${tmax}°<span style="font-size:30px;color:#b3b8c7">/${tmin}°</span></div><div class="cond">${WMO.short(j.daily.weather_code[i])}</div></div><div class="stats"><div><span class="si">${ic.w}</span><b>12 км/ч</b><label>Ветер</label></div><div><span class="si">${ic.h}</span><b>22%</b><label>Влажность</label></div><div><span class="si">${ic.r}</span><b>${j.daily.precipitation_probability_max[i]}%</b><label>Дождь</label></div></div><div class="card"><div class="periods"><div class="period"><div class="l">Утро</div><div class="tt">${avg(b.morn)}°</div></div><div class="period"><div class="l">День</div><div class="tt">${avg(b.day)}°</div></div><div class="period"><div class="l">Вечер</div><div class="tt">${avg(b.eve)}°</div></div><div class="period"><div class="l">Ночь</div><div class="tt">${avg(b.night)}°</div></div></div></div>`;
+  document.getElementById("day-body").innerHTML=`<div class="hero"><div class="icon-big">${WMO.pic(j.daily.weather_code[i],120)}</div><div class="deg" style="font-size:64px">${tmax}°<span style="font-size:30px;color:var(--muted)">/${tmin}°</span></div><div class="cond">${WMO.short(j.daily.weather_code[i])}</div></div><div class="stats"><div><span class="si">${ic.w}</span><b>12 км/ч</b><label>Ветер</label></div><div><span class="si">${ic.h}</span><b>22%</b><label>Влажность</label></div><div><span class="si">${ic.r}</span><b>${j.daily.precipitation_probability_max[i]}%</b><label>Дождь</label></div></div><div class="card"><div class="periods"><div class="period"><div class="l">Утро</div><div class="tt">${avg(b.morn)}°</div></div><div class="period"><div class="l">День</div><div class="tt">${avg(b.day)}°</div></div><div class="period"><div class="l">Вечер</div><div class="tt">${avg(b.eve)}°</div></div><div class="period"><div class="l">Ночь</div><div class="tt">${avg(b.night)}°</div></div></div></div>`;
   show("day");
 }
 function render(j){
-  const c=j.current,hours=parseHours(j,16),rain=hours[0]?hours[0].prob:72;
-  const ic=statIcons(c.wind_speed_10m,c.relative_humidity_2m,rain,c.weather_code);
+  const c=j.current,hours=parseHours(j,16),rain=hours[0]?hours[0].prob:72,ic=statIcons(c.wind_speed_10m,c.relative_humidity_2m,rain,c.weather_code);
   document.getElementById("place").textContent="📍 "+state.name;
-  document.getElementById("today-body").innerHTML=`<div class="status">Макет v17 · Geist</div><div class="hero"><div class="icon-big">${WMO.pic(c.weather_code,128)}</div><div class="deg">${Math.round(c.temperature_2m)}°</div><div class="cond">${WMO.short(c.weather_code)}</div><div class="feel">ощущается ${Math.round(c.apparent_temperature)}°</div></div><div class="stats"><div><span class="si">${ic.w}</span><b>${Math.round(c.wind_speed_10m)} км/ч</b><label>Ветер</label></div><div><span class="si">${ic.h}</span><b>${c.relative_humidity_2m}%</b><label>Влажность</label></div><div><span class="si">${ic.r}</span><b>${rain}%</b><label>Дождь</label></div></div><div class="row-title">Сегодня <button class="go" id="open-days">10 дней ›</button></div><div class="hours-clip"><div class="hours">${hours.map((h,i)=>`<div class="hour ${i===0?"on":""}"><div class="d">${Math.round(h.temp)}°</div><span class="ico">${WMO.pic(h.code,32)}</span><div class="t">${String(h.t.getHours()).padStart(2,"0")}:00</div></div>`).join("")}</div></div>`;
+  document.getElementById("today-body").innerHTML=`<div class="status">Макет v18</div><div class="hero"><div class="icon-big">${WMO.pic(c.weather_code,128)}</div><div class="deg">${Math.round(c.temperature_2m)}°</div><div class="cond">${WMO.short(c.weather_code)}</div><div class="feel">ощущается ${Math.round(c.apparent_temperature)}°</div></div><div class="stats"><div><span class="si">${ic.w}</span><b>${Math.round(c.wind_speed_10m)} км/ч</b><label>Ветер</label></div><div><span class="si">${ic.h}</span><b>${c.relative_humidity_2m}%</b><label>Влажность</label></div><div><span class="si">${ic.r}</span><b>${rain}%</b><label>Дождь</label></div></div><div class="row-title">Сегодня <button class="go" id="open-days">10 дней ›</button></div><div class="hours-clip"><div class="hours">${hours.map((h,i)=>`<div class="hour ${i===0?"on":""}"><div class="d">${Math.round(h.temp)}°</div><span class="ico">${WMO.pic(h.code,32)}</span><div class="t">${String(h.t.getHours()).padStart(2,"0")}:00</div></div>`).join("")}</div></div>`;
   document.getElementById("open-days").onclick=openDays;
 }
-const views={today:"view-today",days:"view-days",day:"view-day",places:"view-places"};
-function show(tab){Object.entries(views).forEach(([k,id])=>document.getElementById(id).classList.toggle("hidden",k!==tab));document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab==="today"&&(tab==="today"||tab==="days"||tab==="day")||b.dataset.tab===tab))}
-document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
+const views={today:"view-today",days:"view-days",day:"view-day",places:"view-places",settings:"view-settings"};
+function show(tab){
+  const dockTab=(tab==="days"||tab==="day")?"today":tab;
+  Object.entries(views).forEach(([k,id])=>document.getElementById(id).classList.toggle("hidden",k!==tab));
+  document.getElementById("dock").dataset.on=dockTab;
+}
+document.querySelectorAll("#dock button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
 document.getElementById("back-days").onclick=()=>show("today");
 document.getElementById("back-day").onclick=openDays;
+function applyTheme(mode){
+  const sys=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";
+  const t=mode==="system"?sys:mode;
+  document.documentElement.dataset.theme=t;
+  document.getElementById("theme-seg").dataset.on=mode;
+  localStorage.setItem("theme",mode);
+}
+document.querySelectorAll("#theme-seg button").forEach(b=>b.onclick=()=>applyTheme(b.dataset.th));
+applyTheme(localStorage.getItem("theme")||"system");
+matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{if((localStorage.getItem("theme")||"system")==="system")applyTheme("system")});
+document.getElementById("hits").innerHTML=`<div class="hit" data-n="Минск">Минск</div><div class="hit" data-n="Москва">Москва</div><div class="hit" data-n="Астана">Астана</div>`;
+document.querySelectorAll("#hits .hit").forEach(el=>el.onclick=()=>{state.name=el.dataset.n;render(state.main);show("today")});
 state.main=mock();render(state.main);
 </script>
 </body></html>
