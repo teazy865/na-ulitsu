@@ -16,7 +16,7 @@ body{padding:calc(env(safe-area-inset-top)+10px) 20px calc(78px + env(safe-area-
 .status{width:max-content;margin:10px auto 0;background:#161922;border-radius:999px;padding:5px 10px;font-size:12px;color:#c9cddd}
 .hero{text-align:center;margin-top:10px}
 .icon-big{font-size:88px;line-height:1}
-.deg{font-size:86px;font-weight:620;letter-spacing:-4px;line-height:.92}
+.deg{font-size:86px;font-weight:620;letter-spacing:-4px;line-height:.92;color:#fff}
 .cond{color:#c5c9d6;font-size:20px;margin-top:4px}
 .feel{color:var(--muted);font-size:13px;margin-top:4px}
 .stats{display:grid;grid-template-columns:1fr 1fr 1fr;background:#14161d;border-radius:24px;margin-top:18px;padding:14px 4px;text-align:center}
@@ -28,19 +28,19 @@ body{padding:calc(env(safe-area-inset-top)+10px) 20px calc(78px + env(safe-area-
 .hour{min-width:62px;background:#14161d;border-radius:18px;padding:10px 8px;text-align:center}
 .hour.on{background:linear-gradient(180deg,#4aa2ff,#2f7bff);box-shadow:0 8px 22px rgba(47,123,255,.32)}
 .hour .d{font-weight:700}.hour .t{color:var(--muted);font-size:11px;margin-top:4px}.hour.on .t{color:#eef5ff}
-.days{margin-top:6px}
-.day{display:grid;grid-template-columns:42px 34px 1fr 96px;align-items:center;min-height:52px;column-gap:8px}
+.days{margin:6px -20px 0;padding:0 10vw}
+.day{display:grid;grid-template-columns:44px minmax(0,1fr) 92px;align-items:center;min-height:54px;column-gap:6px}
 .day .wd{color:#9aa1b4;font-weight:600;font-size:15px}
-.day .ico{font-size:24px;text-align:center;line-height:1}
+.day .mid{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0}
+.day .ico{font-size:24px;line-height:1;width:28px;text-align:center}
 .day .lab{font-weight:600;font-size:16px}
-.day .temps{text-align:right;font-weight:700;font-size:15px;letter-spacing:.2px;white-space:nowrap}
+.day .temps{text-align:right;font-weight:700;font-size:15px;white-space:nowrap}
 .day .temps .mn{color:#8b90a0;margin-left:8px}
 .card{background:#14161d;border-radius:22px;padding:14px;margin-top:12px}
-.advice{display:flex;gap:10px}.title{font-weight:650}.detail{color:var(--muted);font-size:13px;margin-top:3px}
+.detail{color:var(--muted);font-size:13px;margin-top:3px}
 .tabs{position:fixed;left:0;right:0;bottom:0;display:flex;padding:8px 18px calc(10px + env(safe-area-inset-bottom));background:rgba(7,8,12,.94)}
 .tabs button{flex:1;background:0;border:0;color:var(--muted);padding:10px;font-weight:700}.tabs button.on{color:#fff}
 .search{width:100%;border:0;border-radius:16px;padding:12px 14px;background:#1c1f28;color:#fff;font-size:16px}
-button.link{background:var(--blue);color:#fff;border:0;border-radius:14px;padding:10px 16px;font-weight:700;width:100%;margin-top:12px}
 button.back{background:0;border:0;color:#fff;font-size:15px;font-weight:650;padding:0 0 8px}
 .hidden{display:none!important}
 .periods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
@@ -62,20 +62,18 @@ button.back{background:0;border:0;color:#fff;font-size:15px;font-weight:650;padd
   <div class="top">Места</div>
   <div class="card" style="margin-top:16px">
     <input class="search" placeholder="Поиск отключён в режиме дизайна" disabled/>
-    <div class="detail" style="margin-top:12px">Живые запросы выключены, показываем макет для Минска.</div>
+    <div class="detail">Живые запросы выключены.</div>
   </div>
 </div>
 <nav class="tabs"><button class="on" data-tab="today">Сейчас</button><button data-tab="places">Места</button></nav>
 <script>
-const LIVE=false;
-const WMO={symbol(c){if(c===0)return"☀️";if(c<=2)return"⛅";if(c===3)return"☁️";if(c>=95)return"⛈️";if(c>=71)return"🌨️";if(c>=61||c>=80)return"🌧️";return"☁️"},
-short(c){if(c<=1)return"Ясно";if(c===2)return"Облачно";if(c===3)return"Пасмурно";if(c>=95)return"Гроза";if(c>=71)return"Снег";if(c>=61)return"Дождь";return"Облачно"},
-phrase(c){return WMO.short(c)}};
+const WMO={symbol(c){if(c===0)return"☀️";if(c<=2)return"⛅";if(c===3)return"☁️";if(c>=95)return"⛈️";if(c>=71)return"❄️";if(c>=61||c>=80)return"🌧️";return"☁️"},
+short(c){if(c<=1)return"Ясно";if(c===2)return"Облачно";if(c===3)return"Пасмурно";if(c>=95)return"Гроза";if(c>=71)return"Снег";if(c>=61)return"Дождь";return"Облачно"}};
 const WD=["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 function mock(){
   const now=new Date(); now.setMinutes(0,0,0);
-  const hourly={time:[],temperature_2m:[],apparent_temperature:[],precipitation_probability:[],precipitation:[],weather_code:[],wind_speed_10m:[]};
-  const daily={time:[],weather_code:[],temperature_2m_max:[],temperature_2m_min:[],apparent_temperature_max:[],apparent_temperature_min:[],precipitation_probability_max:[]};
+  const hourly={time:[],temperature_2m:[],apparent_temperature:[],precipitation_probability:[],weather_code:[]};
+  const daily={time:[],weather_code:[],temperature_2m_max:[],temperature_2m_min:[],precipitation_probability_max:[]};
   const codes=[63,63,95,3,95,61,95,2,61,0];
   for(let d=0;d<10;d++){
     const day=new Date(now); day.setDate(now.getDate()+d); day.setHours(0,0,0,0);
@@ -83,8 +81,6 @@ function mock(){
     daily.weather_code.push(codes[d]);
     daily.temperature_2m_max.push(20+(d%6));
     daily.temperature_2m_min.push(14+(d%5));
-    daily.apparent_temperature_max.push(19+(d%6));
-    daily.apparent_temperature_min.push(13+(d%5));
     daily.precipitation_probability_max.push([72,55,80,20,88,60,70,15,40,5][d]);
     for(let h=0;h<24;h++){
       const t=new Date(day); t.setHours(h);
@@ -92,25 +88,16 @@ function mock(){
       hourly.temperature_2m.push(16+Math.round(6*Math.sin((h-8)/4)));
       hourly.apparent_temperature.push(15+Math.round(6*Math.sin((h-8)/4)));
       hourly.precipitation_probability.push(h>=10&&h<=18?70:20);
-      hourly.precipitation.push(0.2);
       hourly.weather_code.push(codes[d]);
-      hourly.wind_speed_10m.push(12);
     }
   }
-  return {
-    current:{temperature_2m:23,apparent_temperature:21,weather_code:95,is_day:1,relative_humidity_2m:24,precipitation:0,wind_speed_10m:13},
-    hourly, daily
-  };
+  return {current:{temperature_2m:23,apparent_temperature:21,weather_code:95,is_day:1,relative_humidity_2m:24,wind_speed_10m:13},hourly,daily};
 }
 function parseHours(j,limit){const now=Date.now(),hours=[];for(let i=0;i<j.hourly.time.length;i++){const t=new Date(j.hourly.time[i]);hours.push({t,temp:j.hourly.temperature_2m[i],app:j.hourly.apparent_temperature[i],prob:j.hourly.precipitation_probability[i],code:j.hourly.weather_code[i]})}return limit?hours.filter(h=>h.t.getTime()>=now-36e5).slice(0,limit):hours}
 function ymd(d){const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
 let state={name:"Минск",main:null};
-function load(){
-  state.main=mock();
-  render(state.main);
-}
 function daysHtml(j){
-  return j.daily.time.map((d,i)=>`<div class="day" data-i="${i}"><div class="wd">${WD[new Date(d).getDay()]}</div><div class="ico">${WMO.symbol(j.daily.weather_code[i])}</div><div class="lab">${WMO.short(j.daily.weather_code[i])}</div><div class="temps">+${Math.round(j.daily.temperature_2m_max[i])}°<span class="mn">+${Math.round(j.daily.temperature_2m_min[i])}°</span></div></div>`).join("");
+  return j.daily.time.map((d,i)=>`<div class="day" data-i="${i}"><div class="wd">${WD[new Date(d).getDay()]}</div><div class="mid"><div class="ico">${WMO.symbol(j.daily.weather_code[i])}</div><div class="lab">${WMO.short(j.daily.weather_code[i])}</div></div><div class="temps">+${Math.round(j.daily.temperature_2m_max[i])}°<span class="mn">+${Math.round(j.daily.temperature_2m_min[i])}°</span></div></div>`).join("");
 }
 function openDay(i){
   const j=state.main,date=j.daily.time[i],tmax=Math.round(j.daily.temperature_2m_max[i]),tmin=Math.round(j.daily.temperature_2m_min[i]);
@@ -125,13 +112,13 @@ function openDay(i){
 function render(j){
   const c=j.current, hours=parseHours(j,12);
   document.getElementById("place").textContent="📍 "+state.name;
-  document.getElementById("today-body").innerHTML=`<div class="status">Режим дизайна · без API</div><div class="hero"><div class="icon-big">${WMO.symbol(c.weather_code)}</div><div class="deg">${Math.round(c.temperature_2m)}°</div><div class="cond">${WMO.phrase(c.weather_code)}</div><div class="feel">ощущается ${Math.round(c.apparent_temperature)}°</div></div><div class="stats"><div><b>${Math.round(c.wind_speed_10m)} км/ч</b><label>Ветер</label></div><div><b>${c.relative_humidity_2m}%</b><label>Влажность</label></div><div><b>${hours[0]?hours[0].prob:72}%</b><label>Дождь</label></div></div><div class="row-title">Сегодня <small>почасовка</small></div><div class="hours">${hours.map((h,i)=>`<div class="hour ${i===0?"on":""}"><div class="d">${Math.round(h.temp)}°</div><div>${WMO.symbol(h.code)}</div><div class="t">${String(h.t.getHours()).padStart(2,"0")}:00</div></div>`).join("")}</div><div class="row-title">10 дней</div><div class="days">${daysHtml(j)}</div>`;
+  document.getElementById("today-body").innerHTML=`<div class="status">Режим дизайна · без API</div><div class="hero"><div class="icon-big">${WMO.symbol(c.weather_code)}</div><div class="deg">${Math.round(c.temperature_2m)}°</div><div class="cond">${WMO.short(c.weather_code)}</div><div class="feel">ощущается ${Math.round(c.apparent_temperature)}°</div></div><div class="stats"><div><b>${Math.round(c.wind_speed_10m)} км/ч</b><label>Ветер</label></div><div><b>${c.relative_humidity_2m}%</b><label>Влажность</label></div><div><b>${hours[0]?hours[0].prob:72}%</b><label>Дождь</label></div></div><div class="row-title">Сегодня <small>почасовка</small></div><div class="hours">${hours.map((h,i)=>`<div class="hour ${i===0?"on":""}"><div class="d">${Math.round(h.temp)}°</div><div>${WMO.symbol(h.code)}</div><div class="t">${String(h.t.getHours()).padStart(2,"0")}:00</div></div>`).join("")}</div><div class="row-title">10 дней</div><div class="days">${daysHtml(j)}</div>`;
   document.querySelectorAll(".day").forEach(el=>el.onclick=()=>openDay(+el.dataset.i));
 }
 const views={today:"view-today",day:"view-day",places:"view-places"};
 function show(tab){Object.entries(views).forEach(([k,id])=>document.getElementById(id).classList.toggle("hidden",k!==tab));document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===(tab==="day"?"today":tab)))}
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
 document.getElementById("back").onclick=()=>show("today");
-load();
+state.main=mock();render(state.main);
 </script>
 </body></html>
