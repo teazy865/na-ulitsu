@@ -19,8 +19,8 @@ body{padding:calc(env(safe-area-inset-top)+10px) 0 calc(78px + env(safe-area-ins
 .stats{display:grid;grid-template-columns:1fr 1fr 1fr;background:#14161d;border-radius:24px;margin:18px 20px 0;padding:14px 4px;text-align:center}
 .stats div+div{border-left:1px solid rgba(255,255,255,.08)}
 .stats b{display:block;font-size:14px}.stats label{color:#8b90a0;font-size:11px;margin-top:3px;display:block}
-.row-title{display:flex;justify-content:space-between;margin:20px 20px 10px;font-weight:650;color:#d8dbe6}
-.row-title small{color:#8b90a0;font-weight:500}
+.row-title{display:flex;justify-content:space-between;align-items:center;margin:20px 20px 10px;font-weight:650;color:#d8dbe6}
+.row-title .go{color:#8b90a0;font-weight:600;font-size:15px;background:0;border:0;padding:0}
 .hours{display:flex;gap:10px;overflow-x:auto;padding:0 20px 6px;-webkit-overflow-scrolling:touch}
 .hour{min-width:62px;background:#14161d;border-radius:18px;padding:10px 8px;text-align:center;flex:0 0 auto}
 .hour.on{background:linear-gradient(180deg,#4aa2ff,#2f7bff)}
@@ -50,8 +50,13 @@ button.back{background:0;border:0;color:#fff;font-size:15px;font-weight:650;padd
   <div class="top" id="place">📍 Минск</div>
   <div id="today-body"></div>
 </div>
+<div id="view-days" class="hidden">
+  <button class="back" id="back-days">‹ Назад</button>
+  <div class="top">10 дней</div>
+  <div id="days-body" class="days" style="margin-top:16px"></div>
+</div>
 <div id="view-day" class="hidden">
-  <button class="back" id="back">‹ Назад</button>
+  <button class="back" id="back-day">‹ К 10 дням</button>
   <div class="top" id="day-h1"></div>
   <div id="day-body"></div>
 </div>
@@ -89,6 +94,13 @@ function parseHours(j,limit){const now=Date.now(),hours=[];for(let i=0;i<j.hourl
 function ymd(d){const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
 const state={name:"Минск",main:null};
 function daysHtml(j){return j.daily.time.map((d,i)=>`<div class="day" data-i="${i}"><div class="wd">${WD[new Date(d).getDay()]}</div><div class="mid"><span class="ico">${WMO.symbol(j.daily.weather_code[i])}</span><span class="lab">${WMO.short(j.daily.weather_code[i])}</span></div><div class="temps">+${Math.round(j.daily.temperature_2m_max[i])}°<span class="mn">+${Math.round(j.daily.temperature_2m_min[i])}°</span></div></div>`).join("")}
+function bindDays(){document.querySelectorAll("#days-body .day").forEach(el=>el.onclick=()=>openDay(+el.dataset.i))}
+function openDays(){
+  if(!state.main)return;
+  document.getElementById("days-body").innerHTML=daysHtml(state.main);
+  bindDays();
+  show("days");
+}
 function openDay(i){
   const j=state.main,date=j.daily.time[i],tmax=Math.round(j.daily.temperature_2m_max[i]),tmin=Math.round(j.daily.temperature_2m_min[i]);
   const hours=parseHours(j).filter(h=>ymd(h.t)===ymd(date));
@@ -102,13 +114,14 @@ function openDay(i){
 function render(j){
   const c=j.current,hours=parseHours(j,12);
   document.getElementById("place").textContent="📍 "+state.name;
-  document.getElementById("today-body").innerHTML=`<div class="status">Макет v11 · без API</div><div class="hero"><div class="icon-big">${WMO.symbol(c.weather_code)}</div><div class="deg">${Math.round(c.temperature_2m)}°</div><div class="cond">${WMO.short(c.weather_code)}</div><div class="feel">ощущается ${Math.round(c.apparent_temperature)}°</div></div><div class="stats"><div><b>${Math.round(c.wind_speed_10m)} км/ч</b><label>Ветер</label></div><div><b>${c.relative_humidity_2m}%</b><label>Влажность</label></div><div><b>${hours[0]?hours[0].prob:72}%</b><label>Дождь</label></div></div><div class="row-title">Сегодня <small>почасовка</small></div><div class="hours">${hours.map((h,i)=>`<div class="hour ${i===0?"on":""}"><div class="d">${Math.round(h.temp)}°</div><div>${WMO.symbol(h.code)}</div><div class="t">${String(h.t.getHours()).padStart(2,"0")}:00</div></div>`).join("")}</div><div class="row-title">10 дней</div><div class="days">${daysHtml(j)}</div>`;
-  document.querySelectorAll(".day").forEach(el=>el.onclick=()=>openDay(+el.dataset.i));
+  document.getElementById("today-body").innerHTML=`<div class="status">Макет v12 · без API</div><div class="hero"><div class="icon-big">${WMO.symbol(c.weather_code)}</div><div class="deg">${Math.round(c.temperature_2m)}°</div><div class="cond">${WMO.short(c.weather_code)}</div><div class="feel">ощущается ${Math.round(c.apparent_temperature)}°</div></div><div class="stats"><div><b>${Math.round(c.wind_speed_10m)} км/ч</b><label>Ветер</label></div><div><b>${c.relative_humidity_2m}%</b><label>Влажность</label></div><div><b>${hours[0]?hours[0].prob:72}%</b><label>Дождь</label></div></div><div class="row-title">Сегодня <button class="go" id="open-days">10 дней ›</button></div><div class="hours">${hours.map((h,i)=>`<div class="hour ${i===0?"on":""}"><div class="d">${Math.round(h.temp)}°</div><div>${WMO.symbol(h.code)}</div><div class="t">${String(h.t.getHours()).padStart(2,"0")}:00</div></div>`).join("")}</div>`;
+  document.getElementById("open-days").onclick=openDays;
 }
-const views={today:"view-today",day:"view-day",places:"view-places"};
-function show(tab){Object.entries(views).forEach(([k,id])=>document.getElementById(id).classList.toggle("hidden",k!==tab));document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===(tab==="day"?"today":tab)))}
+const views={today:"view-today",days:"view-days",day:"view-day",places:"view-places"};
+function show(tab){Object.entries(views).forEach(([k,id])=>document.getElementById(id).classList.toggle("hidden",k!==tab));document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab==="today"&&(tab==="today"||tab==="days"||tab==="day")||b.dataset.tab===tab))}
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
-document.getElementById("back").onclick=()=>show("today");
+document.getElementById("back-days").onclick=()=>show("today");
+document.getElementById("back-day").onclick=openDays;
 state.main=mock();render(state.main);
 </script>
 </body></html>
